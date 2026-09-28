@@ -24,7 +24,7 @@ pipeline {
                     echo "Pushing to Docker Hub..."
                     // This explicitly logs in using your Jenkins credentials
                     withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS}", passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
-                        bat "echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin"
+                        bat "echo %DOCKER_PASS%| docker login -u %DOCKER_USER% --password-stdin"
                         bat "docker push ${IMAGE_TAG}"
                         bat "docker tag ${IMAGE_TAG} ${IMAGE_NAME}:latest"
                         bat "docker push ${IMAGE_NAME}:latest"
