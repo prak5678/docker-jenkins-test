@@ -2,6 +2,7 @@ pipeline {
     agent any
     
     environment {
+        // The ID of your Jenkins credentials
         DOCKERHUB_CREDENTIALS = 'docker-hub-credentials'
         IMAGE_NAME = 'prak5678/my-test-app'
         IMAGE_TAG = "${IMAGE_NAME}:${env.BUILD_ID}"
@@ -12,8 +13,7 @@ pipeline {
             steps {
                 script {
                     echo "Building the Docker Image..."
-                    // This uses your local Docker Desktop to build the image
-                    dockerImage = docker.build("${IMAGE_TAG}")
+                    bat "docker build -t ${IMAGE_TAG} ."
                 }
             }
         }
@@ -22,9 +22,12 @@ pipeline {
             steps {
                 script {
                     echo "Pushing to Docker Hub..."
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
-                        dockerImage.push()
-                        dockerImage.push('latest')
+                    // This explicitly logs in using your Jenkins credentials
+                    withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS}", passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+                        bat "echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin"
+                        bat "docker push ${IMAGE_TAG}"
+                        bat "docker tag ${IMAGE_TAG} ${IMAGE_NAME}:latest"
+                        bat "docker push ${IMAGE_NAME}:latest"
                     }
                 }
             }
@@ -34,10 +37,9 @@ pipeline {
             steps {
                 script {
                     echo "Deploying locally on port 80..."
-                    // Since you are testing on one laptop, "Production" is just running the container
                     // Remove the old container if it exists
                     bat 'docker rm -f my-production-app || exit 0'
-                    // Run the newly pushed image from Docker Hub
+                    // Run the newly pushed image
                     bat "docker run -d -p 80:80 --name my-production-app ${IMAGE_TAG}"
                 }
             }
