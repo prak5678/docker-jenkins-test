@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         DOCKERHUB_CREDENTIALS = 'docker-hub-credentials'
-        IMAGE_NAME = 'prakhar/my-test-app'
+        IMAGE_NAME = 'prak5678/my-test-app'
         IMAGE_TAG = "${IMAGE_NAME}:${env.BUILD_ID}"
     }
 
