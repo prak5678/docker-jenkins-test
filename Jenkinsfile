@@ -24,7 +24,7 @@ pipeline {
                     echo "Pushing to Docker Hub..."
                     withCredentials([usernamePassword(credentialsId: "${DOCKERHUB_CREDENTIALS}", passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
                         // Added docker.io to the end of the command
-                        bat "echo %DOCKER_PASS%| docker login -u %DOCKER_USER% --password-stdin docker.io"
+                        bat "echo %DOCKER_PASS%| docker login -u %DOCKER_USER% --password-stdin"
                         bat "docker push ${IMAGE_TAG}"
                         bat "docker tag ${IMAGE_TAG} ${IMAGE_NAME}:latest"
                         bat "docker push ${IMAGE_NAME}:latest"
