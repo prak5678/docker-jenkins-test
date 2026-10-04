@@ -31,7 +31,7 @@ pipeline {
 
                     bat '''
                         docker logout
-                        echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin docker.io
+                        echo %DOCKER_PASS%| docker login -u %DOCKER_USER% --password-stdin docker.io
 
                         docker push %IMAGE_TAG%
 
